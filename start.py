@@ -3,6 +3,7 @@ from logging import Logger, getLogger, INFO, StreamHandler, Formatter
 from sys import stdout
 from platform import system
 from os.path import exists, join
+from os import mkdir
 
 def SetLogger(logger : Logger):
     logger.setLevel(INFO)
@@ -33,6 +34,12 @@ def CreateEnvironment(logger : Logger, env : str):
         logger.log(INFO, "Virtual Environment Is Already Created")
         return
     
+    if exists("inputs") is False:
+        mkdir("inputs")
+
+    if exists("outputs") is False:
+        mkdir("outputs")
+
     logger.log(INFO, "Creating Virtual Environment")
     run("python -m venv venv", shell=True)
 
