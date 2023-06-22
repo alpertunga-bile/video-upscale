@@ -2,7 +2,8 @@ from glob import glob
 from os.path import join
 from platform import system
 from json import load
-from subprocess import run
+from subprocess import run, DEVNULL
+from logging import Logger, INFO
 
 from ImageUtility import ExtractFrames, CreateVideoFromFrames
 
@@ -31,17 +32,22 @@ def RunUpscaleScript(originalHeight : int):
     elif settingsDict['fp32']:
         command += "--fp32 "
 
-    command += f"--ext {settingsDict['ext']} "
+    command += f"--ext png "
 
     if osName == "Windows":
         command += "&& venv\\Scripts\\deactivate.bat"
 
-    run(command, shell=True)
+    run(command, shell=True, stderr=DEVNULL)
 
-def Upscale():
-    videos = glob(join("inputs", "*.mp4"))
+def Upscale(logger : Logger):
+    videos = glob(join("inputs", "*.mp4")) + glob(join("inputs", "*.avi")) + glob(join("inputs", "*.mkv"))
+
+    if len(videos) == 0:
+        logger.log(INFO, "No videos in inputs folder")
+        return
 
     for video in videos:
+        logger.log(INFO, f"Upscaling {video} file")
         height, fps = ExtractFrames(video)
-        #RunUpscaleScript(height)
+        RunUpscaleScript(height)
         CreateVideoFromFrames("output", fps)

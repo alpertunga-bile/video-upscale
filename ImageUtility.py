@@ -1,23 +1,20 @@
 from os.path import exists, join
 from os import mkdir
 from cv2 import VideoCapture, imwrite, imread, VideoWriter, VideoWriter_fourcc
-from cv2 import CAP_PROP_FRAME_COUNT, CAP_PROP_FRAME_HEIGHT, CAP_PROP_FRAME_WIDTH, CAP_PROP_FPS
+from cv2 import CAP_PROP_FRAME_COUNT, CAP_PROP_FRAME_HEIGHT, CAP_PROP_FPS
 from shutil import rmtree
 from tqdm import tqdm
 from glob import glob
 
+def RecreateFolder(folderName : str):
+    if exists(folderName):
+        rmtree(folderName)
+
+    mkdir(folderName)
+
 def ExtractFrames(videoPath : str):
-    if exists("temp"):
-        rmtree("temp")
-
-    mkdir("temp")
-
-    """
-    if exists("tempOutput"):
-        rmtree("tempOutput")
-    
-    mkdir("tempOutput")
-    """
+    RecreateFolder("temp")
+    RecreateFolder("tempOutput")
 
     vidCap = VideoCapture(videoPath)
 
@@ -27,16 +24,18 @@ def ExtractFrames(videoPath : str):
 
     for i in tqdm(range(0, frameCount), desc="Extracting Frames"):
         success, image = vidCap.read()
-        imwrite(join("temp", f"frame{i + 1}.png"), image)
+        if success:
+            imwrite(join("temp", f"frame{i + 1}.png"), image)
 
     vidCap.release()
 
     return height, fps
 
 def CreateVideoFromFrames(outputName : str, fps : int):
+    totalFiles = len(glob(join("tempOutput", "*")))
     frames = []
-    for filename in glob(join("tempOutput", "*")):
-        image = imread(filename)
+    for i in range(0, totalFiles):
+        image = imread(join("tempOutput", f"frame{i + 1}_out.png"))
         height, width, layers = image.shape
         size = (width, height)
         frames.append(image)

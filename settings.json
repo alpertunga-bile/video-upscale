@@ -3,6 +3,5 @@
     "modelName" : "RealESRGAN_x4plus",
     "tileSize" : 256,
     "faceEnhance" : false,
-    "fp32" : true,
-    "ext" : "png"
+    "fp32" : true
 }
