@@ -163,3 +163,4 @@ cython_debug/
 Real-ESRGAN/
 inputs/
 outputs/
+temp/
