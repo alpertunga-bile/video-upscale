@@ -1,2 +1,2 @@
 # video-upscale
-Upscale the videos with RealESRGAN
+Upscale videos with RealESRGAN
