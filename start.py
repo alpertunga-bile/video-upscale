@@ -50,6 +50,9 @@ def CreateEnvironment(logger : Logger, env : str):
     RunInstallCommand("facexlib", env)
     RunInstallCommand("gfpgan", env)
 
+    if env == "Windows":
+        RunInstallCommand("pyreadline3", env)
+
     logger.log(INFO, "Installing Requirements")
     run(GetInstallCommand(f"-r {join('Real-ESRGAN', 'requirements.txt')}", env), shell=True, stdout=DEVNULL, stderr=DEVNULL)
     
