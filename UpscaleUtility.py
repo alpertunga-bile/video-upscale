@@ -4,7 +4,7 @@ from platform import system
 from json import load
 from subprocess import run
 
-from ImageUtility import ExtractFrames
+from ImageUtility import ExtractFrames, CreateVideoFromFrames
 
 def RunUpscaleScript(originalHeight : int):
     osName = system()
@@ -42,6 +42,6 @@ def Upscale():
     videos = glob(join("inputs", "*.mp4"))
 
     for video in videos:
-        height, width, fps = ExtractFrames(video)
-        RunUpscaleScript(height)
-        
+        height, fps = ExtractFrames(video)
+        #RunUpscaleScript(height)
+        CreateVideoFromFrames("output", fps)
