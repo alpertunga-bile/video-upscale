@@ -1,7 +1,7 @@
 {
-    "targetHeight" : 2160,
-    "modelName" : "RealESRGAN_x4plus",
-    "tileSize" : 256,
-    "faceEnhance" : false,
-    "fp32" : true
+     "targetHeight": 1440,
+     "modelName": "RealESRGAN_x4plus",
+     "tileSize": 256,
+     "faceEnhance": false,
+     "fp32": true
 }

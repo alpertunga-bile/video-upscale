@@ -1,6 +1,6 @@
 from shutil import rmtree
 from os.path import exists
-from os import remove, mkdir
+from os import remove, mkdir, system, name
 from logging import Logger, INFO, StreamHandler, Formatter
 from sys import stdout
 
@@ -11,6 +11,9 @@ def RemoveDirectory(directory : str):
 def RemoveFile(file : str):
     if exists(file):
         remove(file)
+
+def ClearTerminal():
+    system('cls' if name == 'nt' else 'clear')
 
 def CreateDirectory(directory : str, remove : bool = False):
     isExist = exists(directory)
