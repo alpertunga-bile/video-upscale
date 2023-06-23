@@ -1,20 +1,13 @@
-from os.path import exists, join
-from os import mkdir
+from os.path import join
 from cv2 import VideoCapture, imwrite, imread, VideoWriter, VideoWriter_fourcc
 from cv2 import CAP_PROP_FRAME_COUNT, CAP_PROP_FRAME_HEIGHT, CAP_PROP_FPS
-from shutil import rmtree
 from tqdm import tqdm
 from glob import glob
-
-def RecreateFolder(folderName : str):
-    if exists(folderName):
-        rmtree(folderName)
-
-    mkdir(folderName)
+from Utilities.Utility import CreateDirectory
 
 def ExtractFrames(videoPath : str):
-    RecreateFolder("temp")
-    RecreateFolder("tempOutput")
+    CreateDirectory("temp", True)
+    CreateDirectory("tempOutput", True)
 
     vidCap = VideoCapture(videoPath)
 

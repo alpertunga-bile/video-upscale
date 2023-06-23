@@ -5,7 +5,7 @@ from json import load
 from subprocess import run, DEVNULL
 from logging import Logger, INFO
 
-from ImageUtility import ExtractFrames, CreateVideoFromFrames
+from Utilities.ImageUtility import ExtractFrames, CreateVideoFromFrames
 
 def RunUpscaleScript(originalHeight : int):
     osName = system()

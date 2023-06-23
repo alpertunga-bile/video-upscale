@@ -1,18 +1,9 @@
+from Utilities.Utility import SetLogger, RemoveDirectory, CreateDirectory
 from subprocess import run, DEVNULL
-from logging import Logger, getLogger, INFO, StreamHandler, Formatter
-from sys import stdout
+from logging import getLogger, Logger, INFO
 from platform import system
 from os.path import exists, join
-from os import mkdir
-
-def SetLogger(logger : Logger):
-    logger.setLevel(INFO)
-
-    handler = StreamHandler(stdout)
-    handler.setLevel(INFO)
-    formatter = Formatter('[%(levelname)s] %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)   
+from argparse import ArgumentParser
 
 def GetInstallCommand(package : str, env : str):
     returnCommand = ""
@@ -26,7 +17,7 @@ def GetInstallCommand(package : str, env : str):
     return returnCommand
 
 def RunInstallCommand(packageName : str, env : str):
-    logger.log(INFO, f"Installing {packageName.upper()}")
+    logger.log(INFO, f"Installing {packageName}")
     run(GetInstallCommand(packageName, env), shell=True, stdout=DEVNULL, stderr=DEVNULL)
 
 def CreateEnvironment(logger : Logger, env : str):
@@ -34,17 +25,15 @@ def CreateEnvironment(logger : Logger, env : str):
         logger.log(INFO, "Virtual Environment Is Already Created")
         return
     
-    if exists("inputs") is False:
-        mkdir("inputs")
-
-    if exists("outputs") is False:
-        mkdir("outputs")
+    CreateDirectory("inputs")
+    CreateDirectory("outputs")
 
     logger.log(INFO, "Creating Virtual Environment")
     run("python -m venv venv", shell=True)
 
     logger.log(INFO, "Cloning Repository")
-    run("git clone https://github.com/xinntao/Real-ESRGAN.git", shell=True, stdout=DEVNULL, stderr=DEVNULL)
+    if exists("Real-ESRGAN") is False:
+        run("git clone https://github.com/xinntao/Real-ESRGAN.git", shell=True, stdout=DEVNULL, stderr=DEVNULL)
 
     RunInstallCommand("basicsr", env)
     RunInstallCommand("facexlib", env)
@@ -61,20 +50,38 @@ def CreateEnvironment(logger : Logger, env : str):
     if env == "Windows":
         command += "venv\\Scripts\\activate.bat && cd Real-ESRGAN && "
         command += "..\\venv\\Scripts\\python.exe setup.py develop && "
+        command += "..\\venv\\Scripts\\pip.exe uninstall torch torchvision --yes && "
         command += "cd .. && venv\\Scripts\\deactivate.bat"
     elif env == "Linux":
-        command += "source venv/bin/activate && cd Real-ESRGAN && python3 setup.py develop && cd .."
+        command += "source venv/bin/activate && cd Real-ESRGAN && python3 setup.py develop && pip3 uninstall torch torchvision --yes && cd .."
 
     run(command, shell=True, stdout=DEVNULL, stderr=DEVNULL)
+
+    RunInstallCommand("torch torchvision --index-url https://download.pytorch.org/whl/cu118", env)
+    RunInstallCommand("xformers", env)
+    RunInstallCommand("accelerate", env)
 
     logger.log(INFO, "Virtual Environment Is Created")
 
 if __name__ == "__main__":
     osEnv = system()
     logger = getLogger()
-    SetLogger(logger)    
+    SetLogger(logger)
+
+    parser = ArgumentParser("video-upscale", "Upscale videos with Real-ESRGAN")
+    parser.add_argument("--reinstall", action="store_true", help="Reinstall environment")
+    parser.add_argument("--update", action="store_true", help="Update the Real-ESRGAN repository")
+    args = parser.parse_args()    
+
+    if args.reinstall:
+        logger.log(INFO, "Deleting environment")
+        RemoveDirectory("venv")
 
     CreateEnvironment(logger, osEnv)
+
+    if args.update:
+        logger.log(INFO, "Updating Real-ESRGAN repository")
+        run("cd Real-ESRGAN && git pull && cd ..", shell=True, stdout=DEVNULL, stderr=DEVNULL)
 
     command = ""
     if osEnv == "Windows":
