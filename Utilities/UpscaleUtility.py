@@ -1,5 +1,5 @@
 from glob import glob
-from os.path import join
+from os.path import join, basename, splitext
 from platform import system
 from json import load
 from subprocess import run, DEVNULL
@@ -23,13 +23,14 @@ def RunUpscaleScript(originalHeight : int):
         command += "python3 "
 
     command += f"{join('Real-ESRGAN', 'inference_realesrgan.py')} -n {settingsDict['modelName']} "
-    command += f"-i temp/ -o tempOutput/ "
+    command += f"-i temp -o tempOutput "
     command += f"--outscale {settingsDict['targetHeight'] / originalHeight} "
     command += f"--tile {settingsDict['tileSize']} "
 
     if settingsDict['faceEnhance']:
         command += "--face_enhance "
-    elif settingsDict['fp32']:
+    
+    if settingsDict['fp32']:
         command += "--fp32 "
 
     command += f"--ext png "
@@ -47,7 +48,8 @@ def Upscale(logger : Logger):
         return
 
     for video in videos:
+        name = splitext(basename(video))[0]
         logger.log(INFO, f"Upscaling {video} file")
         height, fps = ExtractFrames(video)
         RunUpscaleScript(height)
-        CreateVideoFromFrames("output", fps)
+        CreateVideoFromFrames(f"{name}_{height}p", fps)
