@@ -52,4 +52,4 @@ def Upscale(logger : Logger):
         logger.log(INFO, f"Upscaling {video} file")
         height, fps = ExtractFrames(video)
         RunUpscaleScript(height)
-        CreateVideoFromFrames(f"{name}_{height}p", fps)
+        CreateVideoFromFrames(f"{name}", fps)

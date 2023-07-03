@@ -38,6 +38,7 @@ def CreateEnvironment(logger : Logger, env : str):
     RunInstallCommand("basicsr", env)
     RunInstallCommand("facexlib", env)
     RunInstallCommand("gfpgan", env)
+    RunInstallCommand("moviepy", env)
 
     if env == "Windows":
         RunInstallCommand("pyreadline3", env)

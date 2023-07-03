@@ -3,11 +3,22 @@ from cv2 import VideoCapture, imwrite, imread, VideoWriter, VideoWriter_fourcc
 from cv2 import CAP_PROP_FRAME_COUNT, CAP_PROP_FRAME_HEIGHT, CAP_PROP_FPS
 from tqdm import tqdm
 from glob import glob
-from Utilities.Utility import CreateDirectory
+from moviepy.editor import VideoFileClip, AudioFileClip, CompositeAudioClip
+from Utilities.Utility import CreateDirectory, RemoveFile
+
+def ExtractAudio(videoPath : str):
+    videoClip = VideoFileClip(videoPath)
+    audioClip = videoClip.audio
+    audioClip.write_audiofile("audio.mp3")
+    videoClip.close()
+    audioClip.close()
 
 def ExtractFrames(videoPath : str):
     CreateDirectory("temp", True)
     CreateDirectory("tempOutput", True)
+
+    RemoveFile("audio.mp3")
+    ExtractAudio(videoPath)
 
     vidCap = VideoCapture(videoPath)
 
@@ -24,6 +35,18 @@ def ExtractFrames(videoPath : str):
 
     return height, fps
 
+def SetAudioToVideo(videoPath : str):
+    audioClip = AudioFileClip("audio.mp3")
+    videoClip = VideoFileClip(videoPath)
+    RemoveFile(videoPath)
+
+    newAudioClip = CompositeAudioClip([audioClip])
+    videoClip.audio = newAudioClip
+    videoClip.write_videofile(videoPath)
+    
+    videoClip.close()
+    audioClip.close()
+
 def CreateVideoFromFrames(outputName : str, fps : int):
     totalFiles = len(glob(join("tempOutput", "*")))
     frames = []
@@ -39,3 +62,6 @@ def CreateVideoFromFrames(outputName : str, fps : int):
         output.write(frames[i])
 
     output.release()
+
+    SetAudioToVideo(join("outputs", f"{outputName}.mp4"))
+    RemoveFile("audio.mp3")

@@ -1,6 +1,6 @@
 {
      "targetHeight": 1440,
-     "modelName": "RealESRGAN_x4plus",
+     "modelName": "RealESRGAN_x4plus_anime_6B",
      "tileSize": 256,
      "faceEnhance": false,
      "fp32": true

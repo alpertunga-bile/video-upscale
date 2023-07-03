@@ -1,5 +1,5 @@
 from Utilities.UpscaleUtility import Upscale
-from Utilities.Utility import RemoveDirectory, SetLogger, ClearTerminal
+from Utilities.Utility import RemoveDirectory, SetLogger, ClearTerminal, RemoveFile
 from Completer import Completer
 
 from logging import getLogger
@@ -17,6 +17,7 @@ def Clear():
 
     RemoveDirectory("temp")
     RemoveDirectory("tempOutput")
+    RemoveFile("audio.mp3")
 
 def PrintMainCommands():
     printString = """
